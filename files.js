@@ -1,10 +1,8 @@
 const fs = require("fs");
 const path = require("path");
+const _ = require("lodash");
 const { exec } = require("child_process");
-// const supportedExtensions = ["js", "py", "json", "yaml"];
-// const supportedExtensionsRegex = new RegExp(
-//   `/\.(${supportedExtensions.join("|")})$/`
-// );
+const maxStdBuffer = 1024 * 1024 * 5; // 5 MB
 
 const getCurrentDirectoryBase = () => {
   return path.basename(process.cwd());
@@ -29,23 +27,19 @@ const getDirTree = absoluteFilePath => {
   return tree;
 };
 
-const getFileData = async (
-  path,
-  supportedFileExtensions,
-  regex,
-  contextLineCount
-) => {
+const getFileData = async (path, supportedFileExtensions, regex) => {
   const fileExtIncludes = getFileExtGrepIncludes(supportedFileExtensions);
-  const grepString = `grep -Eir -C ${contextLineCount} ${fileExtIncludes} "${regex}" ${path}`;
+  let grepString = `grep -Erl ${fileExtIncludes} "${regex}" ${path}`;
   return new Promise((resolve, reject) => {
-    exec(grepString, (err, stdout) => {
+    exec(grepString, { maxBuffer: maxStdBuffer }, (err, stdout) => {
       if (err) {
         if (err.code == 1) {
           reject(`Pre-scan found no AWS / IAM related text in ${path}`);
         }
         reject(err);
       }
-      resolve(stdout);
+      const fileArray = _.compact(stdout.split("\n"));
+      resolve(fileArray);
     });
   });
 };

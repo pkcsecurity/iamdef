@@ -5,6 +5,7 @@ const figletFont = "doom"; // lean, large, "isometric4";
 const CLI = require("clui");
 const Spinner = CLI.Spinner;
 let startTime, endTime;
+let debugMode = false;
 
 const banner = t => {
   console.log(
@@ -70,6 +71,16 @@ const exitFail = t => {
   process.exit(1);
 };
 
+const debug = t => {
+  if (debugMode) {
+    log(`debug: ${t}`, "blue");
+  }
+};
+
+const setDebugMode = b => {
+  debugMode = b;
+};
+
 module.exports = {
   banner,
   bannerErr,
@@ -81,5 +92,7 @@ module.exports = {
   exitSuccess,
   exitFail,
   logStart,
-  logEnd
+  logEnd,
+  debug,
+  setDebugMode
 };
