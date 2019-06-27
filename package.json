@@ -1,0 +1,11 @@
+{
+  "name": "iamdef",
+  "version": "1.0.0",
+  "description": "Builds least privileged IAM roles by scanning your codebase.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nate Hatcher",
+  "license": "UNLICENSED"
+}
