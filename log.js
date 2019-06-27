@@ -23,7 +23,11 @@ const bannerErr = t => {
 };
 
 const err = t => {
-  console.log(chalk.red(t));
+  if (t.stack) {
+    console.error(t);
+  } else {
+    console.log(chalk.red(t));
+  }
 };
 
 const log = (t, color = "green") => {
@@ -49,6 +53,7 @@ const logEnd = () => {
     )}s`
   );
 };
+
 const exitSuccess = t => {
   if (t) {
     log(t);

@@ -19,7 +19,7 @@ const run = async () => {
   const auditRootPathExists = files.directoryExists(absoluteRootPath);
   if (auditRootPathExists) {
     try {
-      await scanner.run();
+      await scanner.run(absoluteRootPath);
     } catch (e) {
       log.err(e);
       log.exitFail(`Error thrown`);
