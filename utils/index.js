@@ -1,39 +1,18 @@
 const log = require("../log");
-const supportedExtensions = ["js", "py"]; //, "json", "yaml", "yml"];
-const fileFlags = ["aws-sdk", "boto", "AWSTemplateFormatVersion"];
-const regexFrame = ["(^|[^A-Za-z])(", ")($|[^A-Za-z])"];
-const excludedDirNames = ["site-packages", "node_modules", ".serverless"];
+const defaultRegexFrame = ["(^|[^A-Za-z])(", ")($|[^A-Za-z])"];
+const defaultExcludedDirNames = [
+  "site-packages",
+  "node_modules",
+  ".serverless"
+];
 const { exec } = require("child_process");
 const _ = require("lodash");
 const maxStdBuffer = 1024 * 1024 * 5; // 5 MB
 
-const scanner = async auditRootPath => {
-  const spinner = log.spinner(
-    `CloudFormation Scanner: Finding relevant files in ${auditRootPath}...`
-  );
-  // Get files with pre-scanner
-  const prescanRegex = constructRegex(fileFlags, regexFrame);
-  const relevantFiles = await getFileData(
-    auditRootPath,
-    supportedExtensions,
-    excludedDirNames,
-    prescanRegex
-  );
-
-  // Run pre-scanner results through their scanners
-  log.log(JSON.stringify(relevantFiles, null, 2));
-  // Collate saved data
-  // Build set of messages
-  // Build set of IAM roles
-  // Output messages
-  // Output IAM roles
-  spinner.stop();
-};
-
 const getFileData = async (
   path,
   supportedFileExtensions,
-  excludedDirs,
+  excludedDirs = defaultExcludedDirNames,
   regex
 ) => {
   const fileExtIncludes = getFileExtGrepIncludes(supportedFileExtensions);
@@ -66,6 +45,7 @@ const getGrepDirExcludes = excludes => {
 };
 
 const constructRegex = (arr, frame) => {
+  frame = frame || defaultRegexFrame;
   const startPrefix = "(";
   const prefix = "|(";
   const suffix = ")";
@@ -78,4 +58,7 @@ const constructRegex = (arr, frame) => {
   return `${frame[0]}${constructedRegex}${frame[1]}`;
 };
 
-module.exports = scanner;
+module.exports = {
+  getFileData,
+  constructRegex
+};
