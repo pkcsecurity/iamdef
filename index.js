@@ -2,19 +2,30 @@ const ask = require("./ask");
 const files = require("./files");
 const scanner = require("./scanner");
 const log = require("./log");
+const argv = require("minimist")(process.argv.slice(2));
+
+// Catch ctrl-C
+process.on("SIGINT", () => {
+  log.exitFail("Caught interrupt signal");
+});
 
 const run = async () => {
   log.clear();
   log.banner("IAM Defined");
-  const askResults = await ask.forAuditRootPath();
-  const absoluteRootPath = files.makeAbsolute(askResults.auditRootPath);
+  log.logStart();
+  const path =
+    argv.t || argv.target || (await ask.forAuditRootPath()).auditRootPath;
+  const absoluteRootPath = files.makeAbsolute(path);
   const auditRootPathExists = files.directoryExists(absoluteRootPath);
   if (auditRootPathExists) {
-    await scanner.run();
+    try {
+      await scanner.run();
+    } catch (e) {
+      log.err(e);
+      log.exitFail(`Error thrown`);
+    }
   } else {
-    log.err(`Path ${absoluteRootPath} does not exist, exiting...`);
-    log.bannerErr("FAIL");
-    process.exit(1);
+    log.exitFail(`Path ${absoluteRootPath} does not exist.`);
   }
 };
 

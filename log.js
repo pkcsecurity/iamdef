@@ -4,6 +4,7 @@ const figlet = require("figlet");
 const figletFont = "doom"; // lean, large, "isometric4";
 const CLI = require("clui");
 const Spinner = CLI.Spinner;
+let startTime, endTime;
 
 const banner = t => {
   console.log(
@@ -35,6 +36,35 @@ const spinner = t => {
   return status;
 };
 
+const logStart = () => {
+  startTime = new Date();
+  log(`Started ${startTime.toISOString()}`);
+};
+
+const logEnd = () => {
+  endTime = new Date();
+  log(
+    `Ended ${endTime.toISOString()}, duration ${Math.round(
+      (endTime - startTime) / 1000
+    )}s`
+  );
+};
+const exitSuccess = t => {
+  if (t) {
+    log(t);
+  }
+  logEnd();
+  banner("WIN");
+  process.exit();
+};
+
+const exitFail = t => {
+  err(t);
+  logEnd();
+  bannerErr("FAIL");
+  process.exit(1);
+};
+
 module.exports = {
   banner,
   bannerErr,
@@ -42,5 +72,9 @@ module.exports = {
   log,
   clear,
   spinner,
-  clear
+  clear,
+  exitSuccess,
+  exitFail,
+  logStart,
+  logEnd
 };
