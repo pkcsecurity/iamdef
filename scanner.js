@@ -1,7 +1,7 @@
 const _ = require("lodash");
 const log = require("./log");
 const scanners = require("./scanners");
-const enabledScanners = ["text"];
+const enabledScanners = ["text", "cloudformation"];
 
 const run = async auditRootPath => {
   log.log(`Enabled scanners: ${enabledScanners.join()}`);

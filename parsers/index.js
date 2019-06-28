@@ -1,3 +1,4 @@
 module.exports = {
-  js: require("./javascript")
+  JsText: require("./javascript"),
+  CloudFormationYamlParser: require("./cloudformation-yaml")
 };

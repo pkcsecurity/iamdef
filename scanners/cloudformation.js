@@ -1,11 +1,12 @@
 const log = require("../log");
-const supportedExtensions = ["js", "py"]; //, "json", "yaml", "yml"];
-const fileFlags = ["aws-sdk", "boto", "AWSTemplateFormatVersion"];
+const supportedExtensions = ["json", "yaml", "yml"];
+const fileFlags = ["AWSTemplateFormatVersion"];
 const regexFrame = ["(^|[^A-Za-z])(", ")($|[^A-Za-z])"];
 const excludedDirNames = ["site-packages", "node_modules", ".serverless"];
 const { exec } = require("child_process");
 const _ = require("lodash");
 const maxStdBuffer = 1024 * 1024 * 5; // 5 MB
+const { CloudFormationYamlParser } = require("../parsers");
 
 const scanner = async auditRootPath => {
   const spinner = log.spinner(
@@ -23,6 +24,12 @@ const scanner = async auditRootPath => {
   // Run pre-scanner results through their scanners
   log.log(JSON.stringify(relevantFiles, null, 2));
   // Collate saved data
+  const cfyamlPromises = _.map(relevantFiles, async f => {
+    const cfp = new CloudFormationYamlParser(f);
+    return cfp.run();
+  });
+  await Promise.all(cfyamlPromises);
+
   // Build set of messages
   // Build set of IAM roles
   // Output messages

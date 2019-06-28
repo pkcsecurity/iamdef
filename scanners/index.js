@@ -1,9 +1,9 @@
 const text = require("./text");
-const jsAst = require("./js-ast");
+const jsast = require("./js-ast");
 const cloudformation = require("./cloudformation");
 
 module.exports = {
   text,
-  jsAst,
+  jsast,
   cloudformation
 };

@@ -8,7 +8,7 @@ class ParserBase {
     this.path = path;
   }
   async load() {
-    return fsReadAsync(this.path);
+    return fsReadAsync(this.path, { encoding: "utf8" });
   }
   async run() {}
 }
